@@ -1,11 +1,14 @@
+require 'matrix'
+class Matrix
+  def []=(row, column, value)
+    @rows[row][column] = value
+  end
+end
+
 class Board
 	def initialize
-		@signs = []
+		@signs = Matrix[ ["a", "b", "c"], ["d", "e", "f"], ["i", "j", "k"] ]
 	end 
-
-	def random
-		first = rand(2)
-	end
 
 	def start(player_a, player_b)
 		puts "#{player_a.name} goes first"
@@ -14,14 +17,34 @@ class Board
 		puts "#{player_b.name} choose sign"
 		player_b.sign = gets.chomp
 		puts "Start game"
-		self.write(player_a)
+		self.play(player_a, player_b)
+	end
+
+	def play(player_a, player_b)
+		while !win?
+			if self.input_ok?(player_a)
+				puts "#{player_a.name} turn"
+				self.write(player_a)
+			end
+			if self.input_ok?(player_b) && !win?
+				puts "#{player_b.name} turn"
+				self.write(player_b)
+			end
+		end
+	end
+
+	def random
+		first = rand(2)
+	end
+
+	def input_ok?(player)
+		true
 	end
 
 	def write(player)
-		while !win?
 			place = gets.chomp.split("")
-			@signs [place[0].to_i][place[1].to_i] = player.sign;
-		end
+			@signs[place[0].to_i-1, place[1].to_i-1] = player.sign;
+			puts @signs
 	end
 
 	def win?
