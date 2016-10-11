@@ -7,6 +7,7 @@ end
 class Game
   def initialize
     @signs = [ ["11", "12", "13"], ["21", "22", "23"], ["31", "32", "33"] ]
+    @tikrinimai = [ [@signs[0][0], @signs[1][1], @signs[2][2]], [@signs[0][2], @signs[1][1], @signs[2][0]], @signs[0], @signs[1], @signs[2], @signs.collect{|i| i[0]}, @signs.collect{|i| i[1]}, @signs.collect{|i| i[2]}] 
   end 
   # Ask user if he wants to play with Ai or second player 
   def secondplayer
@@ -55,7 +56,7 @@ class Game
   # Writes chosen position to cell
   def write(player)
     begin
-      position = player.choose_position 
+      position = player.choose_position(@tikrinimai) 
     end until self.empty_cell?(position)
     @signs[position[0].to_i-1][position[1].to_i-1] = player.sign
   end
@@ -78,8 +79,7 @@ class Game
   end
   # Checks if someone won
   def win?
-    tikrinimai = [ [@signs[0][0], @signs[1][1], @signs[2][2]], [@signs[0][2], @signs[1][1], @signs[2][0]], @signs[0], @signs[1], @signs[2], @signs.collect{|i| i[0]}, @signs.collect{|i| i[1]}, @signs.collect{|i| i[2]}] 
-    tikrinimai.each do |i|
+    @tikrinimai.each do |i|
       if i.same_values?
         self.draw
         return true
@@ -97,7 +97,7 @@ class Player
     @name = gets.chomp
   end
   
-  def choose_position
+  def choose_position(board)
     gets.chomp.split("")
   end
 
@@ -107,10 +107,23 @@ class Computer < Player
   def initialize
     puts "Hello, I'm friendly AI"
     @name = "Friend"
+
+  end
+  # Random position
+  def choose_position(board)
+    puts self.choose_line(board).to_s + "end"
+    (rand(1..3).to_s+rand(1..3).to_s).split("")
   end
 
-  def choose_position
-    (rand(1..3).to_s+rand(1..3).to_s).split("")
+  def choose_line(board)
+    board.each do |i|
+      i.each_cons(2) do |arr|
+        if arr.same_values? # ir neuzimta?
+          return i
+        end 
+      end
+    end
+    nil
   end
 
 end
