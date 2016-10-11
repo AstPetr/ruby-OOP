@@ -8,6 +8,7 @@ class Game
   def initialize
     @signs = [ ["11", "12", "13"], ["21", "22", "23"], ["31", "32", "33"] ]
     @checks = self.check
+    @times = -1
   end 
   # Tikrinam ivestas reiksmes i lentele ir priskiriam tikrinimo masyvui
   def check
@@ -45,9 +46,9 @@ class Game
   end
   # Plays game until someone wins
   def play(players)
-    times = 0
     while !win?
       players.each do |player|
+        self.end_if_tie
         self.draw
         puts "#{player.name} turn with #{player.sign}"
         self.write(player)
@@ -55,10 +56,16 @@ class Game
           puts "#{player.name} wins!"
           exit
         end
-        # times +=1
-        # puts times.to_s + "times"
-        # exit if times == 6
       end
+    end
+  end
+  # Ends game if tie 
+  def end_if_tie
+    @times +=1
+    if @times == 9
+      self.draw
+      puts "Tie"
+      exit
     end
   end
   # Writes chosen position to cell
@@ -134,7 +141,7 @@ class Computer < Player
       return (rand(1..3).to_s+rand(1..3).to_s).split("")
     end
   end
-
+ # Tries to catch if oponent can win next turn
   def smart_choose(checks)
     checks.each do |i|
       i.each_cons(2) do |arr|
