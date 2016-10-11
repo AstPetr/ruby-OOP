@@ -7,10 +7,10 @@ end
 class Game
   def initialize
     @signs = [ ["11", "12", "13"], ["21", "22", "23"], ["31", "32", "33"] ]
-    @checks = self.tikrinam
+    @checks = self.check
   end 
   # Tikrinam ivestas reiksmes i lentele ir priskiriam tikrinimo masyvui
-  def tikrinam
+  def check
     @checks = [ [@signs[0][0], @signs[1][1], @signs[2][2]], [@signs[0][2], @signs[1][1], @signs[2][0]], @signs[0], @signs[1], @signs[2], @signs.collect{|i| i[0]}, @signs.collect{|i| i[1]}, @signs.collect{|i| i[2]}] 
   end
   # Ask user if he wants to play with Ai or second player 
@@ -45,6 +45,7 @@ class Game
   end
   # Plays game until someone wins
   def play(players)
+    times = 0
     while !win?
       players.each do |player|
         self.draw
@@ -54,13 +55,16 @@ class Game
           puts "#{player.name} wins!"
           exit
         end
+        # times +=1
+        # puts times.to_s + "times"
+        # exit if times == 6
       end
     end
   end
   # Writes chosen position to cell
   def write(player)
     begin
-      position = player.choose_position(@checks) 
+      position = player.choose_position(self.check) 
     end until self.empty_cell?(position)
     @signs[position[0].to_i-1][position[1].to_i-1] = player.sign
   end
@@ -74,6 +78,14 @@ class Game
     else return true
     end
   end
+  # Checks if x in cell
+  def x_in_cell?
+
+  end
+  # Checks if o in cell
+  def o_in_cell?
+
+  end
   # Draws game board
   def draw
     @signs.each do |i|
@@ -83,8 +95,7 @@ class Game
   end
   # Checks if someone won
   def win?
-    @checks = self.tikrinam
-    @checks.each do |i|
+    self.check.each do |i|
       if i.same_values?
         self.draw
         return true
@@ -119,8 +130,9 @@ class Computer < Player
   def choose_position(checks)
     if !smart_choose(checks).nil?
       return smart_choose(checks)
+    else
+      return (rand(1..3).to_s+rand(1..3).to_s).split("")
     end
-    (rand(1..3).to_s+rand(1..3).to_s).split("")
   end
 
   def smart_choose(checks)
