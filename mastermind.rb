@@ -6,6 +6,7 @@ class Mastermind
 		@colors = ["red", "green", "blue", "yellow", "brown", "orange", "black", "white"]
 		@computer = Computer.new(@colors.dup)
 		@player_guess = []
+		@answer = []
 	end
 	# Checks if all turns there used
 	def all_turns_used?
@@ -15,11 +16,18 @@ class Mastermind
 			return false
 		end
 	end
-    
+    # Determines who chooses and who guesses 
 	def assign_roles
-
+		puts "Do you want to guess? y/n"
+		answ = gets.chomp
+		if answ == "y"
+			player = Human.new
+		else
+			player = Computer.new
+		end
+		player
 	end
-
+    # Plays game until player wins or no more turns left
 	def play(player)
 		puts @colors.join(" * ")
 		@player_guess = player.guess
@@ -34,17 +42,17 @@ class Mastermind
 		end
 		puts "Correct!"
 	end
-
+    # Determines if guess ir correct
 	def correct?
 		@player_guess == @computer.answer
 	end
 end
 
-class Player
+class Human
 	def initialize
 		@colors = []
 	end
-
+    # Human player guess
 	def guess
 		4.times do |i|
 			@colors[i] = gets.chomp
@@ -55,9 +63,9 @@ end
 
 class Computer
 	attr_reader :answer
-	def initialize(colors)
+	def initialize
 		puts "--------------------------"
-		puts @answer = random(colors)
+		#puts @answer = random(colors)
 		puts "--------------------------"
 	end
 
@@ -90,6 +98,6 @@ class Computer
 end
 
 game = Mastermind.new
-player = Player.new
+player = game.assign_roles
 game.play(player)
 
