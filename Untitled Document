@@ -4,9 +4,8 @@ class Mastermind
 		puts "Objective: Guess 4 colors in 9 turns"
 		@turns = 1
 		@colors = ["red", "green", "blue", "yellow", "brown", "orange", "black", "white"]
-		@master = nil
+		@computer = Computer.new(@colors.dup)
 		@player_guess = []
-		@answer = []
 	end
 	# Checks if all turns there used
 	def all_turns_used?
@@ -16,26 +15,12 @@ class Mastermind
 			return false
 		end
 	end
-    # Determines who chooses and who guesses 
+    
 	def assign_roles
-		puts "Do you want to guess? y/n"
-		answ = gets.chomp
-		if answ == "y"
-			player = Human.new
-			@master = Computer.new(@colors.dup)
-		else
-			player = Computer.new
-			@master = Human.new
-		end
-		player
+
 	end
-	# Asks for answer
-	def ask_for_answer
-		@answer = @master.answer
-	end
-    # Plays game until player wins or no more turns left
+
 	def play(player)
-		ask_for_answer
 		puts @colors.join(" * ")
 		@player_guess = player.guess
 		until correct?
@@ -43,32 +28,23 @@ class Mastermind
 				puts "No more turns"
 				exit
 			end
-			puts @master.hint(@player_guess)
+			puts @computer.hint(@player_guess)
 			@player_guess = player.guess
 			@turns +=1
 		end
 		puts "Correct!"
 	end
-    # Determines if guess is correct
+
 	def correct?
-		@player_guess == @answer
+		@player_guess == @computer.answer
 	end
 end
 
-class Human
-	attr_reader :answer
+class Player
 	def initialize
 		@colors = []
 	end
-    # Chooses colors for answer
-	def random
 
-	end
-    # gives gint depending on players guess
-	def guess
-
-	end
-    # Human player guess
 	def guess
 		4.times do |i|
 			@colors[i] = gets.chomp
@@ -84,7 +60,7 @@ class Computer
 		puts @answer = random(colors)
 		puts "--------------------------"
 	end
-    # Chooses colors for answer
+
 	def random(colors)
 		k = 0
 		rand_colors = []
@@ -96,7 +72,7 @@ class Computer
 		end
 		rand_colors
 	end
-    # gives gint depending on players guess
+
 	def hint(guess)
 		correct_place = 0
 		equal = @answer & guess
@@ -114,6 +90,6 @@ class Computer
 end
 
 game = Mastermind.new
-player = game.assign_roles
+player = Player.new
 game.play(player)
 
